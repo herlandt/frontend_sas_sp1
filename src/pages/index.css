@@ -1,0 +1,409 @@
+/* src/index.css - Estilos globales y para el Dashboard */
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background-color: #f0f5f1; /* Fondo principal de toda la app */
+  color: #333;
+}
+
+/* --- Navbar del Dashboard --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #2a573e; /* Verde oscuro */
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #d4e0d7;
+  color: #2a573e;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #2a573e;
+  color: #fff;
+}
+
+/* --- Contenido Principal del Dashboard --- */
+.main-content {
+  padding: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: #2a573e;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 1rem;
+}
+
+/* --- ESTILOS PARA LA LISTA DE PROFESIONALES (de ProfessionalsPage.css) --- */
+.professionals-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.professional-card {
+  background: #fff;
+  border: 1px solid #d4e0d7;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.professional-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.professional-card h3 {
+  color: #2a573e;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.professional-card p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.professional-card strong {
+  color: #234934;
+}
+
+/* --- ESTILOS PARA LA PÁGINA DE DETALLE Y DISPONIBILIDAD --- */
+
+.day-schedule {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.day-schedule h4 {
+  color: #2a573e;
+  font-weight: bold;
+}
+
+.time-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.slot-button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.slot-button.available {
+  border-color: #6b9f83;
+  color: #6b9f83;
+  background-color: #fff;
+}
+
+.slot-button.available:hover {
+  background-color: #2a573e;
+  color: #fff;
+}
+
+.slot-button.booked {
+  border-color: #ccc;
+  color: #aaa;
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+/* src/index.css */
+
+/* ... (todos los estilos anteriores) ... */
+
+/* --- ESTILOS PARA LA LISTA DE CITAS --- */
+.status-confirmed {
+  color: #2a573e; /* Verde */
+  font-weight: bold;
+  background-color: #e8f5e9;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.status-pending {
+  color: #ffa000; /* Ámbar */
+  font-weight: bold;
+  background-color: #fff8e1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.status-cancelled {
+  color: #d32f2f; /* Rojo */
+  font-weight: bold;
+  background-color: #ffebee;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.status-completed {
+  color: #555;
+  font-weight: bold;
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+
+
+/* --- ESTILOS PARA LA PÁGINA DE DISPONIBILIDAD --- */
+
+.availability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.time-slot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f5f1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.time-slot-item span {
+    font-weight: bold;
+    color: #2a573e;
+}
+
+.time-slot-item button {
+    background: #e63946;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.add-slot-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 10px;
+    background: transparent;
+    border: 2px dashed #6b9f83;
+    color: #6b9f83;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-slot-btn:hover {
+    background: #e8f5e9;
+    color: #2a573e;
+}
+/* src/index.css */
+
+/* --- ESTILOS PARA LA PÁGINA DE CHAT --- */
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 60vh; /* Altura de la ventana de chat */
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto; /* Permite scroll si hay muchos mensajes */
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message {
+  padding: 8px 12px;
+  background-color: #f0f5f1;
+  border-radius: 12px;
+  max-width: 70%;
+  align-self: flex-start; /* Alinea los mensajes a la izquierda por defecto */
+}
+
+.chat-form {
+  display: flex;
+  padding: 1rem;
+  gap: 10px;
+}
+
+.chat-form input {
+  flex-grow: 1;
+  padding: 10px 12px;
+  border: 1px solid #d4e0d7;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.chat-form button {
+  width: auto; /* El botón no ocupará todo el ancho */
+}
+/* ===== Clínica (Dashboard Psicólogo) ===== */
+
+.clinic-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+.clinic-header {
+  display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1rem;
+}
+.clinic-title { font-size:2rem; color:#234934; margin:0; }
+.clinic-subtitle { color:#6b7a71; margin:.25rem 0 0; }
+.clinic-actions { display:flex; gap:.5rem; }
+
+.clinic-stats {
+  display:grid; grid-template-columns:repeat(5,minmax(140px,1fr));
+  gap:12px; margin:1rem 0 1.25rem;
+}
+.cstat {
+  background:#fff; border:1px solid #e3ebe6; border-radius:14px; padding:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,.04); display:flex; flex-direction:column; gap:4px;
+}
+.cstat span { color:#6b7a71; font-size:.9rem; }
+.cstat strong { color:#234934; font-size:1.35rem; }
+.cstat-pending strong { color:#c98a00; }
+.cstat-confirmed strong { color:#2a573e; }
+.cstat-cancelled strong { color:#b63a3a; }
+.cstat-completed strong { color:#555; }
+
+.clinic-controls {
+  display:grid; grid-template-columns:1fr 300px; gap:12px; margin-bottom:.75rem;
+}
+.chipset { display:flex; gap:8px; flex-wrap:wrap; }
+.chip {
+  padding:8px 12px; border-radius:999px; border:1px solid #d4e0d7; background:#fff;
+  color:#234934; font-weight:700; cursor:pointer; transition:all .2s;
+}
+.chip:hover { background:#f0f5f1; }
+.chip-active { border-color:#6b9f83; box-shadow:0 0 0 3px rgba(107,159,131,.15); }
+
+.clinic-search input{
+  width:100%; padding:10px 12px; border:1px solid #d4e0d7; border-radius:10px; font-size:.95rem;
+}
+.clinic-search input:focus{ border-color:#6b9f83; box-shadow:0 0 6px rgba(107,159,131,.2); outline:none; }
+
+.clinic-agenda { display:flex; flex-direction:column; gap:20px; }
+.agenda-group { background:#fff; border:1px solid #e3ebe6; border-radius:16px; padding:16px; box-shadow:0 6px 16px rgba(0,0,0,.05); }
+.agenda-date { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.date-badge {
+  background:#f0f5f1; color:#234934; border:1px solid #d4e0d7; border-radius:999px; padding:6px 12px; font-weight:800;
+}
+.date-count { color:#6b7a71; font-weight:600; }
+
+.agenda-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
+
+.clinic-card { border:1px solid #e3ebe6; border-radius:14px; padding:14px; background:#fff; display:flex; flex-direction:column; gap:10px; }
+.card-top { display:flex; align-items:center; gap:12px; }
+.avatar {
+  width:42px; height:42px; border-radius:50%; background:#e8f5e9; color:#2a573e; font-weight:800;
+  display:grid; place-items:center; border:1px solid #cfead3;
+}
+.card-id { display:flex; gap:8px; align-items:center; }
+.patient-name { margin:0; font-size:1.05rem; color:#234934; }
+
+.card-info { display:grid; grid-template-columns:1fr; gap:6px; }
+.kv { display:flex; justify-content:space-between; align-items:center; }
+.kv span { color:#6b7a71; }
+.kv strong { color:#234934; }
+.link-row .session-link { color:#2a573e; font-weight:700; }
+.muted { color:#8c9a92; }
+
+.card-actions { display:flex; gap:8px; justify-content:flex-end; }
+
+.pill { padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:800; border:1px solid transparent; }
+.pill-pending { color:#c98a00; background:#fff3cd; border-color:#ffe69c; }
+.pill-confirmed { color:#2a573e; background:#e8f5e9; border-color:#cfead3; }
+.pill-cancelled { color:#b63a3a; background:#ffebee; border-color:#ffcdd2; }
+.pill-completed { color:#555; background:#f5f5f5; border-color:#e0e0e0; }
+
+.btn-secondary {
+  padding:10px 14px; border-radius:10px; border:1px solid #d4e0d7; background:#fff; color:#234934; font-weight:700; text-decoration:none; cursor:pointer; transition:all .2s;
+}
+.btn-secondary:hover { background:#f0f5f1; }
+
+.btn-ghost {
+  padding:10px 14px; border-radius:10px; border:1px dashed #6b9f83; background:transparent; color:#2a573e; font-weight:700; text-decoration:none; cursor:pointer; transition:all .2s;
+}
+.btn-ghost:hover { background:#e8f5e9; }
+
+@media (max-width: 1024px){
+  .clinic-stats { grid-template-columns:repeat(3,1fr); }
+  .clinic-controls { grid-template-columns:1fr; }
+}
+@media (max-width: 640px){
+  .clinic-stats { grid-template-columns:repeat(2,1fr); }
+  .agenda-grid { grid-template-columns:1fr; }
+}
+/* ===== Ajustes responsive para que NO quede vertical ===== */
+
+/* Reduce padding en pantallas chicas para ganar ancho útil */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem; /* antes 2rem */
+  }
+  .clinic-wrap { max-width: 100%; } /* que use todo el ancho disponible */
+}
+
+/* Grid más flexible: baja el min-width de las cards */
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* antes 320px */
+  gap: 14px;
+}
+
+/* En tablets fuerza al menos 2 columnas si hay espacio */
+@media (min-width: 720px) {
+  .agenda-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* En desktop amplio, cartas un poco más anchas */
+@media (min-width: 1100px) {
+  .agenda-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+/* Mantén el contenedor centrado y sin encoger demasiado */
+.clinic-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Opcional: afina la cabecera y stats para que no compriman el grid en móvil */
+@media (max-width: 640px){
+  .clinic-stats { grid-template-columns: repeat(2, 1fr); }
+  .clinic-controls { grid-template-columns: 1fr; }
+}
