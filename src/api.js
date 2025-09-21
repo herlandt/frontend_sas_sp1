@@ -4,7 +4,8 @@ import axios from 'axios';
 
 // Creamos una instancia de axios con configuración base
 const apiClient = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api', // La URL base de tu API
+    baseURL: 'http://127.0.0.1:8000/api',
+    // baseURL: 'https://psico-admin-sp1-despliegue.onrender.com/api/', // La URL base de tu API
 });
 
 // Esto es un "interceptor": se ejecuta ANTES de cada petición.

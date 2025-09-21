@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api';
+// import './Auth.css'; // <-- ¡Ya no se necesita!
 
 function LoginPage() {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -20,14 +21,11 @@ function LoginPage() {
             const loginResponse = await apiClient.post('/auth/login/', formData);
             localStorage.setItem('authToken', loginResponse.data.token);
             
-            // Después del login, preguntamos quién es el usuario
             const profileResponse = await apiClient.get('/auth/profile/');
             const userType = profileResponse.data.user_type;
             
-            // Guardamos el tipo de usuario para usarlo en las rutas protegidas
             localStorage.setItem('userType', userType);
 
-            // Redirigimos según el tipo
             if (userType === 'professional') {
                 navigate('/psychologist-dashboard');
             } else {
@@ -40,26 +38,51 @@ function LoginPage() {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2 className="auth-title">🔒 Iniciar Sesión</h2>
+        <div className="flex justify-center items-center min-h-screen p-4 sm:p-8 bg-background">
+            <div className="bg-card text-card-foreground p-8 sm:p-12 rounded-xl shadow-xl w-full max-w-md">
+                <h2 className="text-3xl font-bold text-center text-primary mb-8">🔒 Iniciar Sesión</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label>Email</label>
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-foreground mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            value={formData.email} 
+                            onChange={handleChange} 
+                            required 
+                            className="w-full p-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
                     </div>
-                    <div className="input-group">
-                        <label>Contraseña</label>
-                        <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-foreground mb-2">Contraseña</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            value={formData.password} 
+                            onChange={handleChange} 
+                            required 
+                            className="w-full p-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
                     </div>
-                    <button type="submit" className="btn-primary">Entrar</button>
+                    <button 
+                        type="submit" 
+                        className="w-full p-3 bg-primary text-primary-foreground font-semibold rounded-lg shadow-md hover:bg-primary/90 transition-colors"
+                    >
+                        Entrar
+                    </button>
                 </form>
-                {error && <p className="error">{error}</p>}
-                <p className="redirect">
-                    ¿Olvidaste tu contraseña? <Link to="/reset-password">Recupérala aquí</Link>
+                
+                {error && (
+                    <div className="mt-4 p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
+                        <span className="font-medium">⚠️ {error}</span>
+                    </div>
+                )}
+
+                <p className="mt-6 text-center text-sm text-muted-foreground">
+                    ¿Olvidaste tu contraseña? <Link to="/reset-password" className="font-medium text-primary hover:underline">Recupérala aquí</Link>
                 </p>
-                <p className="redirect">
-                    ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+                <p className="mt-2 text-center text-sm text-muted-foreground">
+                    ¿No tienes cuenta? <Link to="/register" className="font-medium text-primary hover:underline">Regístrate</Link>
                 </p>
             </div>
         </div>
