@@ -14,6 +14,10 @@ function LoginPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+     // src/pages/LoginPage.jsx
+
+    // ... (importaciones y estados) ...
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -26,16 +30,33 @@ function LoginPage() {
             
             localStorage.setItem('userType', userType);
 
+            // --- ¡BLOQUE CORREGIDO! ---
+            // Guardamos solo 'first_name', que es lo que la API
+            // nos da y lo que el chat necesita.
+            localStorage.setItem('currentUser', JSON.stringify({
+                id: profileResponse.data.id,
+                first_name: profileResponse.data.first_name
+            }));
+            // --------------------------
+
             if (userType === 'professional') {
                 navigate('/psychologist-dashboard');
             } else {
                 navigate('/dashboard');
             }
-
-        } catch {
-            setError('Credenciales incorrectas. Inténtalo de nuevo.');
+        
+        } catch (err) {
+            // Hacemos el catch más inteligente para ver el error real
+            console.error("Error en el login:", err);
+            if (err.response && err.response.status === 400) {
+                 setError('Credenciales incorrectas. Inténtalo de nuevo.');
+            } else {
+                 setError('Error de red o el servidor no responde.');
+            }
         }
     };
+
+    // ... (resto de tu return) ...
 
     return (
         <div className="flex justify-center items-center min-h-screen p-4 sm:p-8 bg-background">

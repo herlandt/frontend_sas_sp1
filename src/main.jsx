@@ -3,6 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate, Outlet } from 'react-router-dom';
+import { Toaster } from 'sonner'; // <-- 1. IMPORTA SONNER
 
 // Importaciones de Páginas
 import App from './App.jsx';
@@ -20,9 +21,9 @@ import PsychologistProfilePage from './pages/PsychologistProfilePage.jsx';
 import ChatPage from './pages/ChatPage.jsx';
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-import './index.css'; // <-- Importa el nuevo index.css
+import './index.css'; 
 
-// --- Botones Genéricos (reemplazando btn-primary, etc.) ---
+// --- Clases de Botones (sin cambios) ---
 const btnPrimary = "px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors text-center";
 const btnSecondary = "px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/90 transition-colors text-center";
 const btnDestructive = "px-4 py-2 bg-destructive text-destructive-foreground rounded-lg font-semibold hover:bg-destructive/90 transition-colors text-center";
@@ -39,6 +40,9 @@ function DashboardLayout() {
     };
     return (
         <div>
+            {/* 2. AÑADE EL TOASTER AQUÍ */}
+            <Toaster position="top-right" richColors /> 
+            
             <nav className="flex justify-between items-center p-4 px-8 bg-sidebar text-sidebar-foreground shadow-md border-b border-sidebar-border">
                 <Link to="/dashboard" className="text-xl font-bold text-primary">Psico SAS</Link>
                 <div className="flex items-center gap-6">
@@ -63,6 +67,9 @@ function PsychologistLayout() {
     };
     return (
         <div>
+            {/* 2. AÑADE EL TOASTER AQUÍ TAMBIÉN */}
+            <Toaster position="top-right" richColors /> 
+
             <nav className="flex justify-between items-center p-4 px-8 bg-sidebar text-sidebar-foreground shadow-md border-b border-sidebar-border">
                 <Link to="/psychologist-dashboard" className="text-xl font-bold text-primary">Psico SAS (Psicólogo)</Link>
                 <div className="flex items-center gap-6">
@@ -93,11 +100,12 @@ function HomePage() {
     );
 }
 
-// --- RENDERIZADO PRINCIPAL ---
+// --- RENDERIZADO PRINCIPAL (sin cambios) ---
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* ... (Todas tus rutas se quedan igual) ... */}
         {/* --- Rutas Públicas --- */}
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />

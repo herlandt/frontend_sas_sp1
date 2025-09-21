@@ -1,6 +1,6 @@
 // tailwind.config.js
 
-import twAnimate from "tw-animate-css"; // <-- 1. Importa el plugin aquí
+//import twAnimate from "tw-animate-css"; // <-- 1. Importa el plugin aquí
 
 
 export default {
@@ -64,6 +64,6 @@ export default {
     },
   },
   plugins: [
-    twAnimate, // <-- 2. Úsalo aquí
+    
   ],
 }

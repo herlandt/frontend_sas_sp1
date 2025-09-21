@@ -1,46 +1,43 @@
 /* src/index.css */
-
-/* 1. Estas son las directivas correctas de Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 2. Aquí van tus variables. El resto fue eliminado. */
 :root {
-  /* Tus variables de CSS (paleta cyan/teal) */
-  --background: #ffffff;
-  --foreground: #475569;
-  --card: #ecfeff;
-  --card-foreground: #164e63;
-  --popover: #ffffff;
-  --popover-foreground: #475569;
-  --primary: #164e63;
-  --primary-foreground: #ffffff;
-  --secondary: #89b2b6;
-  --secondary-foreground: #ffffff;
-  --muted: #f9fafb;
-  --muted-foreground: #475569;
-  --accent: #89b2b6;
-  --accent-foreground: #164e63;
-  --destructive: #be123c;
-  --destructive-foreground: #ffffff;
-  --border: #d1d5db;
-  --input: #f9fafb;
-  --ring: rgba(22, 78, 99, 0.5);
-  --chart-1: #6b7280;
-  --chart-2: #9ca3af;
-  --chart-3: #d1d5db;
-  --chart-4: #e5e7eb;
-  --chart-5: #f3f4f6;
-  --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #475569;
-  --sidebar-primary: #ecfeff;
-  --sidebar-primary-foreground: #164e63;
-  --sidebar-accent: #89b2b6;
-  --sidebar-accent-foreground: #164e63;
-  --sidebar-border: #d1d5db;
-  --sidebar-ring: rgba(22, 78, 99, 0.5);
+  /* Updated to elegant neutral color scheme with cyan/teal palette */
+  --background: #ffffff; /* Main background color */
+  --foreground: #475569; /* Primary text color */
+  --card: #ecfeff; /* Background for cards */
+  --card-foreground: #164e63; /* Text color for cards */
+  --popover: #ffffff; /* Background for popovers */
+  --popover-foreground: #475569; /* Text color for popovers */
+  --primary: #164e63; /* Primary actions (buttons, links) */
+  --primary-foreground: #ffffff; /* Text color for primary actions */
+  --secondary: #89b2b6; /* Secondary actions */
+  --secondary-foreground: #ffffff; /* Text color for secondary actions */
+  --muted: #f9fafb; /* Muted background for less emphasis */
+  --muted-foreground: #475569; /* Text color for muted elements */
+  --accent: #89b2b6; /* Accent elements (highlights, indicators) */
+  --accent-foreground: #164e63; /* Text color for accent elements */
+  --destructive: #be123c; /* Destructive actions (errors) */
+  --destructive-foreground: #ffffff; /* Text color for destructive actions */
+  --border: #d1d5db; /* Border color for containers */
+  --input: #f9fafb; /* Background for input fields */
+  --ring: rgba(22, 78, 99, 0.5); /* Focus ring color */
+  --chart-1: #6b7280; /* Chart color 1 */
+  --chart-2: #9ca3af; /* Chart color 2 */
+  --chart-3: #d1d5db; /* Chart color 3 */
+  --chart-4: #e5e7eb; /* Chart color 4 */
+  --chart-5: #f3f4f6; /* Chart color 5 */
+  --radius: 0.5rem; /* Corner rounding for elements */
+  --sidebar: #ffffff; /* Background for sidebar */
+  --sidebar-foreground: #475569; /* Text color for sidebar */
+  --sidebar-primary: #ecfeff; /* Primary sidebar background */
+  --sidebar-primary-foreground: #164e63; /* Text color for primary sidebar */
+  --sidebar-accent: #89b2b6; /* Accent color for sidebar */
+  --sidebar-accent-foreground: #164e63; /* Text color for sidebar accent */
+  --sidebar-border: #d1d5db; /* Border for sidebar */
+  --sidebar-ring: rgba(22, 78, 99, 0.5); /* Focus ring for sidebar */
 }
 
 .dark {
@@ -78,12 +75,14 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
-/* 3. La directiva @layer base SÍ es correcta */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Esta es la línea corregida. 'outline-ring/50' no existe. */
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    /* Aquí puedes definir las fuentes si las importas en tu index.html */
+    /* font-family: var(--font-sans), sans-serif; */
   }
 }
