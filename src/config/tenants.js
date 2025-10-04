@@ -21,15 +21,16 @@ export const TENANT_CONFIG = {
             secondary: '#EC4899'
         }
     },
-    // Fallback para desarrollo
+    // Configuración para Admin Global
     'localhost': {
-        name: 'Sistema de Psicología',
-        theme: 'default',
-        logo: '/logos/default.png',
+        name: 'Administrador General - Psico SAS',
+        theme: 'global-admin',
+        logo: '/logos/global-admin.png',
         colors: {
             primary: '#1F2937',
             secondary: '#3B82F6'
-        }
+        },
+        isGlobalAdmin: true
     }
 };
 
@@ -43,7 +44,13 @@ export const getCurrentTenant = () => {
 export const getApiBaseURL = () => {
     const hostname = window.location.hostname;
     
-    // En desarrollo local
+    // Si es localhost simple = Admin Global (NO tiene /api/auth/, solo admin web)
+    if (hostname === 'localhost') {
+        // Para el admin global usaremos endpoints administrativos especiales
+        return `http://localhost:8000`;  // Sin /api porque no usa la API REST estándar
+    }
+    
+    // Si es subdominio.localhost = Clínica específica (SÍ tiene /api/auth/)
     if (hostname.includes('localhost')) {
         return `http://${hostname}:8000/api`;
     }
@@ -52,7 +59,13 @@ export const getApiBaseURL = () => {
     return `https://${hostname}/api`;
 };
 
-// Función para verificar si estamos en modo multi-tenant
+// Función para verificar si estamos en modo admin global
+export const isGlobalAdmin = () => {
+    const hostname = window.location.hostname;
+    return hostname === 'localhost';
+};
+
+// Función para verificar si estamos en modo multi-tenant (clínica específica)
 export const isMultiTenant = () => {
     const hostname = window.location.hostname;
     return hostname !== 'localhost' && hostname.includes('localhost');

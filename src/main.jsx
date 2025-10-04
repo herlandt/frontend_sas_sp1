@@ -26,6 +26,7 @@ import MyDocumentsPage from './pages/MyDocumentsPage.jsx'; // <-- PÁGINA PARA P
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
+import { globalAdminLogout } from './services/globalAdminAuth.js'; // <-- LOGOUT ADMIN GLOBAL
 import './index.css'; 
 
 // --- Clases de Botones (sin cambios) ---
@@ -119,6 +120,44 @@ function PsychologistLayout() {
     );
 }
 
+// Layout para el Administrador Global (localhost)
+function GlobalAdminLayout() {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        globalAdminLogout(); // Logout especial para admin global
+        navigate('/login');
+    };
+    return (
+        <div>
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            <nav className="flex justify-between items-center p-4 px-8 bg-purple-800 text-white shadow-md">
+                <Link to="/global-admin" className="text-xl font-bold">🌐 Administrador General - Psico SAS</Link>
+                <div className="flex items-center gap-6">
+                    <Link to="/global-admin/clinics" className={navLink}>Clínicas</Link>
+                    <Link to="/global-admin/users" className={navLink}>Usuarios Globales</Link>
+                    <Link to="/global-admin/stats" className={navLink}>Estadísticas</Link>
+                    <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div className="p-8 bg-background min-h-screen">
+                <TenantInfo />
+                <Outlet />
+            </div>
+        </div>
+    );
+}
+
 // Layout para el Administrador de la Clínica
 function AdminLayout() {
     const navigate = useNavigate();
@@ -202,7 +241,36 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="appointment/:appointmentId/note" element={<SessionNotePage />} />
         </Route>
 
-                {/* --- Rutas Protegidas para el Administrador de Clínica --- */}
+                {/* --- Rutas Protegidas para el Administrador Global (localhost) --- */}
+        <Route element={<ProtectedRoute userType="admin"><GlobalAdminLayout /></ProtectedRoute>}>
+          <Route path="global-admin" element={
+            <div>
+              <h1 className="text-3xl font-bold text-purple-800 mb-6">🌐 Panel de Administrador General</h1>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">🏥 Clínicas Registradas</h2>
+                  <p className="text-3xl font-bold text-purple-600">2</p>
+                  <p className="text-sm text-gray-600">Bienestar & MindCare</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">👥 Usuarios Totales</h2>
+                  <p className="text-3xl font-bold text-green-600">--</p>
+                  <p className="text-sm text-gray-600">Across all clinics</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">📊 Estadísticas</h2>
+                  <p className="text-3xl font-bold text-blue-600">--</p>
+                  <p className="text-sm text-gray-600">Global metrics</p>
+                </div>
+              </div>
+            </div>
+          } />
+          <Route path="global-admin/clinics" element={<h1 className="text-2xl font-bold text-purple-800">🏥 Gestión de Clínicas</h1>} />
+          <Route path="global-admin/users" element={<h1 className="text-2xl font-bold text-purple-800">👥 Usuarios Globales</h1>} />
+          <Route path="global-admin/stats" element={<h1 className="text-2xl font-bold text-purple-800">📊 Estadísticas Globales</h1>} />
+        </Route>
+
+        {/* --- Rutas Protegidas para el Administrador de Clínica --- */}
                 <Route element={<ProtectedRoute userType="admin"><AdminLayout /></ProtectedRoute>}>
                     <Route path="admin-dashboard" element={<h1 className="text-2xl font-bold text-primary">Bienvenido al Panel de Administración</h1>} />
                     {/* Próximamente: <Route path="admin/users" element={<AdminUsersPage />} /> */}
