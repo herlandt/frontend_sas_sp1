@@ -3,7 +3,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate, Outlet } from 'react-router-dom';
-import { Toaster } from 'sonner'; // <-- 1. IMPORTA SONNER
+import { ToastContainer } from 'react-toastify'; // <-- CAMBIO: REACT-TOASTIFY EN LUGAR DE SONNER
+import 'react-toastify/dist/ReactToastify.css'; // <-- ESTILOS DE REACT-TOASTIFY
 
 // Importaciones de Páginas
 import App from './App.jsx';
@@ -19,8 +20,12 @@ import PsychologistDashboard from './pages/PsychologistDashboard.jsx';
 import PsychologistAvailabilityPage from './pages/PsychologistAvailabilityPage.jsx';
 import PsychologistProfilePage from './pages/PsychologistProfilePage.jsx';
 import ChatPage from './pages/ChatPage.jsx';
+import SessionNotePage from './pages/SessionNotePage.jsx'; // <-- NUEVA PÁGINA
+import DocumentsPage from './pages/DocumentsPage.jsx'; // <-- PÁGINA PARA PSICÓLOGOS
+import MyDocumentsPage from './pages/MyDocumentsPage.jsx'; // <-- PÁGINA PARA PACIENTES
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
 import './index.css'; 
 
 // --- Clases de Botones (sin cambios) ---
@@ -32,6 +37,7 @@ const navLink = "text-sidebar-foreground font-medium hover:text-primary transiti
 // --- LAYOUTS ---
 
 // Layout para el Paciente
+// Layout para el Paciente
 function DashboardLayout() {
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -40,18 +46,31 @@ function DashboardLayout() {
     };
     return (
         <div>
-            {/* 2. AÑADE EL TOASTER AQUÍ */}
-            <Toaster position="top-right" richColors /> 
+            {/* ToastContainer para notificaciones */}
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            /> 
             
             <nav className="flex justify-between items-center p-4 px-8 bg-sidebar text-sidebar-foreground shadow-md border-b border-sidebar-border">
                 <Link to="/dashboard" className="text-xl font-bold text-primary">Psico SAS</Link>
                 <div className="flex items-center gap-6">
                     <Link to="/my-appointments" className={navLink}>Mis Citas</Link>
+                    <Link to="/my-documents" className={navLink}>Mis Documentos</Link>
                     <Link to="/profile" className={navLink}>Mi Perfil</Link>
                     <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
                 </div>
             </nav>
             <div className="p-4 sm:p-8 bg-background min-h-screen">
+              <TenantInfo />
               <Outlet />
             </div>
         </div>
@@ -67,26 +86,76 @@ function PsychologistLayout() {
     };
     return (
         <div>
-            {/* 2. AÑADE EL TOASTER AQUÍ TAMBIÉN */}
-            <Toaster position="top-right" richColors /> 
-
+            {/* ToastContainer para notificaciones */}
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            /> 
+            
             <nav className="flex justify-between items-center p-4 px-8 bg-sidebar text-sidebar-foreground shadow-md border-b border-sidebar-border">
-                <Link to="/psychologist-dashboard" className="text-xl font-bold text-primary">Psico SAS (Psicólogo)</Link>
+                <Link to="/psychologist-dashboard" className="text-xl font-bold text-primary">Psico SAS - Panel Profesional</Link>
                 <div className="flex items-center gap-6">
+                    <Link to="/psychologist-dashboard" className={navLink}>Dashboard</Link>
+                    <Link to="/appointments" className={navLink}>Citas</Link>
+                    <Link to="/documents" className={navLink}>Documentos</Link>
+                    <Link to="/availability" className={navLink}>Disponibilidad</Link>
                     <Link to="/psychologist-profile" className={navLink}>Mi Perfil</Link>
-                    <Link to="/psychologist-availability" className={navLink}>Mi Disponibilidad</Link>
-                    <Link to="/psychologist-dashboard" className={navLink}>Mis Citas</Link>
                     <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
                 </div>
             </nav>
             <div className="p-4 sm:p-8 bg-background min-h-screen">
+              <TenantInfo />
               <Outlet />
             </div>
         </div>
     );
 }
 
-
+// Layout para el Administrador de la Clínica
+function AdminLayout() {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        // Limpiamos todo el almacenamiento para garantizar salida completa del contexto admin
+        localStorage.clear();
+        navigate('/login');
+    };
+    return (
+        <div>
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            <nav className="flex justify-between items-center p-4 px-8 bg-gray-800 text-white shadow-md">
+                <Link to="/admin-dashboard" className="text-xl font-bold">Panel de Administrador</Link>
+                <div className="flex items-center gap-6">
+                    <Link to="/admin/users" className={navLink}>Usuarios</Link>
+                    {/* Enlaces futuros: Clínicas, Estadísticas, Configuración */}
+                    <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div className="p-8 bg-background min-h-screen">
+                <TenantInfo />
+                <Outlet />
+            </div>
+        </div>
+    );
+}
 // --- PÁGINA DE INICIO (PÚBLICA) ---
 function HomePage() {
     return (
@@ -117,6 +186,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route element={<ProtectedRoute userType="patient"><DashboardLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<ProfessionalsPage />} />
           <Route path="my-appointments" element={<MyAppointmentsPage />} />
+          <Route path="my-documents" element={<MyDocumentsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="professional/:id" element={<ProfessionalDetailPage />} />
           <Route path="chat/:appointmentId" element={<ChatPage />} />
@@ -126,9 +196,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route element={<ProtectedRoute userType="professional"><PsychologistLayout /></ProtectedRoute>}>
           <Route path="psychologist-dashboard" element={<PsychologistDashboard />} />
           <Route path="psychologist-availability" element={<PsychologistAvailabilityPage />} />
-           <Route path="psychologist/chat/:appointmentId" element={<ChatPage />} />
+          <Route path="psychologist/chat/:appointmentId" element={<ChatPage />} />
           <Route path="psychologist-profile" element={<PsychologistProfilePage />} />
+          <Route path="psychologist-documents" element={<DocumentsPage />} />
+          <Route path="appointment/:appointmentId/note" element={<SessionNotePage />} />
         </Route>
+
+                {/* --- Rutas Protegidas para el Administrador de Clínica --- */}
+                <Route element={<ProtectedRoute userType="admin"><AdminLayout /></ProtectedRoute>}>
+                    <Route path="admin-dashboard" element={<h1 className="text-2xl font-bold text-primary">Bienvenido al Panel de Administración</h1>} />
+                    {/* Próximamente: <Route path="admin/users" element={<AdminUsersPage />} /> */}
+                </Route>
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

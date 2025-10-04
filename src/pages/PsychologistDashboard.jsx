@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import apiClient from '../api';
 import Modal from '../components/Modal'; // Tu Modal refactorizado
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify'; // Para notificaciones
 
 // --- Constantes de Clases de Tailwind ---
 const btnPrimary = "px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors text-sm";
@@ -60,11 +61,30 @@ function PsychologistDashboard() {
       await apiClient.patch(`/appointments/appointments/${selectedAppt.id}/`, {
         meeting_link: meetingLink,
       });
-      alert('¡Enlace guardado con éxito!');
+      toast.success('¡Enlace guardado con éxito!');
       handleCloseModal();
       fetchAppointments();
     } catch (err) {
-      alert('No se pudo guardar el enlace.');
+      toast.error('No se pudo guardar el enlace.');
+    }
+  };
+
+  // Función para completar una cita
+  const handleCompleteAppointment = async (apptId) => {
+    if (!window.confirm("¿Estás seguro de que quieres marcar esta cita como completada?")) {
+      return;
+    }
+    
+    try {
+      await apiClient.post(`/appointments/appointments/${apptId}/complete/`);
+      toast.success("¡Cita marcada como completada! El paciente ahora puede calificarla.");
+      fetchAppointments(); // Refresca la lista de citas
+    } catch (error) {
+      console.error('Error al completar la cita:', error);
+      const errorMessage = error.response?.data?.detail || 
+                         error.response?.data?.error || 
+                         "No se pudo completar la cita.";
+      toast.error(errorMessage);
     }
   };
   const getInitials = (fullName = '') => { /* ...tu función no cambia... */ 
@@ -229,6 +249,19 @@ function PsychologistDashboard() {
                         <Link to={`/psychologist/chat/${appt.id}`} className={btnSecondary}>
                           Abrir chat
                         </Link>
+                        {appt.status === 'confirmed' && (
+                          <button 
+                            onClick={() => handleCompleteAppointment(appt.id)} 
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm"
+                          >
+                            ✅ Completar Cita
+                          </button>
+                        )}
+                        {['completed', 'confirmed'].includes(appt.status) && (
+                          <Link to={`/appointment/${appt.id}/note`} className={btnSecondary}>
+                            📝 Nota
+                          </Link>
+                        )}
                       </footer>
                     </article>
                   ))}

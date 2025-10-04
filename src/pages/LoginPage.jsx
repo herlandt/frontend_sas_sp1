@@ -39,7 +39,9 @@ function LoginPage() {
             }));
             // --------------------------
 
-            if (userType === 'professional') {
+            if (userType === 'admin') {
+                navigate('/admin-dashboard');
+            } else if (userType === 'professional') {
                 navigate('/psychologist-dashboard');
             } else {
                 navigate('/dashboard');

@@ -1,11 +1,13 @@
 // src/pages/ProfessionalDetailPage.jsx
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 // ... (tus otras importaciones)
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import apiClient from '../api';
 // Importamos los iconos que acabas de instalar
 import { Star, MapPin, Clock, BookOpen, Briefcase, ChevronLeft, Calendar, CheckCircle } from 'lucide-react';
+// Importamos el componente de reseñas
+import ReviewsList from '../components/ReviewsList';
 // --- Constantes de Estilo ---
 const btnBookable = "px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors text-sm text-center cursor-pointer";
 const btnBooked = "px-4 py-2 bg-muted text-muted-foreground rounded-lg cursor-not-allowed text-sm text-center";
@@ -31,7 +33,7 @@ function StarRating({ rating = 0 }) {
 
 // --- Componente de Pestañas (Tabs) ---
 function Tabs({ activeTab, setActiveTab }) {
-  const tabs = ["Acerca de", "Experiencia", "Especialidades"];
+  const tabs = ["Acerca de", "Experiencia", "Especialidades", "Reseñas"];
   const getClasses = (tabName) => {
     return activeTab === tabName
       ? "pb-2 border-b-2 border-primary text-primary font-semibold"
@@ -53,6 +55,7 @@ function Tabs({ activeTab, setActiveTab }) {
 function ProfessionalDetailPage() {
     const [professional, setProfessional] = useState(null);
     const [schedule, setSchedule] = useState(null);
+    const [reviewsData, setReviewsData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { id } = useParams();
@@ -62,27 +65,69 @@ function ProfessionalDetailPage() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
 
-    // --- Lógica de Carga de Datos (sin cambios) ---
+    // --- Función para obtener el horario (separada para reutilización) ---
+    const fetchSchedule = async (userId) => {
+        if (!userId) return;
+        
+        try {
+            const scheduleResponse = await apiClient.get(`/appointments/psychologist/${userId}/schedule/`);
+            setSchedule(scheduleResponse.data);
+            
+            // Si no hay fecha seleccionada, selecciona la primera disponible
+            if (!selectedDate) {
+                const firstAvailableDay = scheduleResponse.data?.schedule.find(d => d.is_available);
+                if (firstAvailableDay) {
+                    setSelectedDate(firstAvailableDay);
+                }
+            } else {
+                // Actualiza la fecha seleccionada con los nuevos datos
+                const updatedSelectedDay = scheduleResponse.data?.schedule.find(d => d.date === selectedDate.date);
+                if (updatedSelectedDay) {
+                    setSelectedDate(updatedSelectedDay);
+                }
+            }
+            
+            return scheduleResponse.data;
+        } catch (err) {
+            console.error("Error al cargar el horario:", err);
+            throw err;
+        }
+    };
+
+    // --- Lógica de Carga de Datos (CORREGIDA) ---
     useEffect(() => {
         const fetchDetails = async () => {
             setLoading(true);
             try {
-                // Tu backend usa el ID de Perfil para estas rutas
-                const profPromise = apiClient.get(`/professionals/${id}/`);
-                const schedulePromise = apiClient.get(`/appointments/psychologist/${id}/schedule/`);
-                
-                const [profResponse, scheduleResponse] = await Promise.all([profPromise, schedulePromise]);
-
+                // 1. Primero obtenemos el perfil profesional usando el ID de la URL
+                const profResponse = await apiClient.get(`/professionals/${id}/`);
                 setProfessional(profResponse.data);
-                setSchedule(scheduleResponse.data);
                 
-                // Selecciona la primera fecha disponible por defecto
-                const firstAvailableDay = scheduleResponse.data?.schedule.find(d => d.is_available);
-                if (firstAvailableDay) {
-                  setSelectedDate(firstAvailableDay);
+                // 2. Extraemos el user_id del perfil para la segunda llamada
+                const userId = profResponse.data.user_id;
+                
+                if (userId) {
+                    // 3. Usamos la función separada para obtener el horario
+                    await fetchSchedule(userId);
+                }
+
+                // 4. Carga las reseñas usando el ID del PERFIL
+                try {
+                    const reviewsResponse = await apiClient.get(`/professionals/${id}/reviews/`);
+                    setReviewsData(reviewsResponse.data);
+                } catch (reviewsError) {
+                    console.error("Error al cargar reseñas:", reviewsError);
+                    // No es crítico, continúa aunque no se puedan cargar las reseñas
+                    setReviewsData({ total_reviews: 0, reviews: [], average_rating: 0 });
+                }
+
+                if (!userId) {
+                    console.error("El user_id no fue encontrado en la respuesta del perfil.");
+                    setError('No se pudo obtener la información de disponibilidad del profesional.');
                 }
 
             } catch (err) {
+                console.error("Error al cargar los datos del profesional:", err);
                 setError('No se pudo cargar la información del profesional.');
             } finally {
                 setLoading(false);
@@ -93,38 +138,58 @@ function ProfessionalDetailPage() {
 
     // --- Lógica de Agendar Cita (modificada para la nueva UI) ---
     const handleBookAppointment = async () => {
+        console.log('=== INICIANDO RESERVA DE CITA ===');
+        console.log('selectedDate:', selectedDate);
+        console.log('selectedTime:', selectedTime);
+        console.log('professional:', professional);
+        
         if (!selectedDate || !selectedTime) {
-            // Puedes usar toast.warning aquí si quieres
-            toast.warning('Selección incompleta', {
-                description: 'Por favor, selecciona una fecha y hora disponibles.'
-            });
+            toast.warning('Por favor, selecciona una fecha y hora disponibles.');
+            return;
+        }
+
+        if (!professional || !professional.user_id) {
+            toast.error('Error: Información del profesional no disponible.');
             return;
         }
 
         try {
-            await apiClient.post('/appointments/appointments/', {
+            const appointmentData = {
                 psychologist: professional.user_id,
                 appointment_date: selectedDate.date,
                 start_time: selectedTime,
-            });
+            };
 
-            // --- REEMPLAZO DE ALERT (ÉXITO) ---
-            toast.success('¡Cita reservada exitosamente!', {
-                description: `Tu cita el ${selectedDate.date} a las ${selectedTime} ha sido registrada.`,
-                duration: 5000, // 5 segundos
-            });
-            // ------------------------------------
+            console.log('Datos a enviar:', appointmentData);
+            console.log('URL completa:', '/appointments/appointments/');
 
-            // Recargamos el horario
-            const scheduleResponse = await apiClient.get(`/appointments/psychologist/${id}/schedule/`);
-            setSchedule(scheduleResponse.data);
+            const response = await apiClient.post('/appointments/appointments/', appointmentData);
+            
+            console.log('Respuesta exitosa:', response.data);
+            toast.success(`¡Cita reservada exitosamente! Tu cita el ${selectedDate.date} a las ${selectedTime} ha sido registrada.`);
+
+            // ¡AQUÍ ESTÁ LA SOLUCIÓN! 
+            // Refresca el horario después de la reserva exitosa
+            console.log('Refrescando horario...');
+            await fetchSchedule(professional.user_id);
+            
+            // Resetea la hora seleccionada para que el usuario pueda hacer otra reserva
             setSelectedTime(null); 
+            console.log('Horario actualizado exitosamente');
+            
         } catch (err) {
-            // --- REEMPLAZO DE ALERT (ERROR) ---
-            toast.error('Error al agendar la cita', {
-                description: 'Es posible que el horario ya no esté disponible. Por favor, refresca la página.'
-            });
-            // ------------------------------------
+            console.error('=== ERROR AL AGENDAR CITA ===');
+            console.error('Error completo:', err);
+            console.error('Response data:', err.response?.data);
+            console.error('Response status:', err.response?.status);
+            console.error('Request config:', err.config);
+            
+            const errorMessage = err.response?.data?.detail || 
+                               err.response?.data?.error || 
+                               err.response?.data || 
+                               'Es posible que el horario ya no esté disponible. Por favor, refresca la página.';
+            
+            toast.error(`Error al agendar la cita: ${typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage}`);
         }
     };
 
@@ -216,6 +281,9 @@ function ProfessionalDetailPage() {
                             </ul>
                         </div>
                     )}
+                    {activeTab === "Reseñas" && (
+                        <ReviewsList data={reviewsData} />
+                    )}
                     {/* Nota: No hay sección de "Idiomas" porque no existe en tu backend */}
                 </div>
 
@@ -257,10 +325,10 @@ function ProfessionalDetailPage() {
                             <h3 className="font-semibold text-foreground mb-3">Horas disponibles</h3>
                             <div className="flex flex-wrap gap-2">
                                 {selectedDate && selectedDate.time_slots.length > 0 ? (
-                                    selectedDate.time_slots.map(slot => (
+                                    selectedDate.time_slots.map((slot, index) => (
                                         slot.is_available ? (
                                             <button 
-                                                key={slot.start_time} 
+                                                key={`${slot.start_time}-${index}`} 
                                                 className={`
                                                   ${btnBookable} 
                                                   ${selectedTime === slot.start_time ? 'ring-2 ring-offset-2 ring-primary' : ''}
@@ -270,7 +338,7 @@ function ProfessionalDetailPage() {
                                                 {slot.start_time}
                                             </button>
                                         ) : (
-                                            <button key={slot.start_time} className={btnBooked} disabled>
+                                            <button key={`${slot.start_time}-${index}`} className={btnBooked} disabled>
                                                 Ocupado
                                             </button>
                                         )

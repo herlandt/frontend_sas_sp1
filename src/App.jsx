@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from './api'; // Usar nuestro cliente configurado
 //import './App.css';
 
 function App() {
@@ -7,10 +7,8 @@ function App() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // La URL completa de tu endpoint en Django
-    const apiUrl = 'http://127.0.0.1:8000/api/professionals/specializations/';
-
-    axios.get(apiUrl)
+    // Usar apiClient en lugar de axios directo con URL hardcodeada
+    apiClient.get('/professionals/specializations/')
       .then(response => {
         setSpecializations(response.data);
       })

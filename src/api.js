@@ -1,11 +1,15 @@
 // src/api.js
 
 import axios from 'axios';
+import { getApiBaseURL } from './config/tenants';
 
-// Creamos una instancia de axios con configuración base
+// Creamos una instancia de axios con configuración dinámica
 const apiClient = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api',
-    // baseURL: 'https://psico-admin-sp1-despliegue.onrender.com/api/', // La URL base de tu API
+    baseURL: getApiBaseURL(),
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 // Esto es un "interceptor": se ejecuta ANTES de cada petición.
@@ -19,6 +23,19 @@ apiClient.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Interceptor para manejar errores de autenticación
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userType');
+            window.location.href = '/login';
+        }
         return Promise.reject(error);
     }
 );
