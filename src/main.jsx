@@ -23,6 +23,9 @@ import ChatPage from './pages/ChatPage.jsx';
 import SessionNotePage from './pages/SessionNotePage.jsx'; // <-- NUEVA PÁGINA
 import DocumentsPage from './pages/DocumentsPage.jsx'; // <-- PÁGINA PARA PSICÓLOGOS
 import MyDocumentsPage from './pages/MyDocumentsPage.jsx'; // <-- PÁGINA PARA PACIENTES
+import AdminDashboardPage from './pages/AdminDashboardPage.jsx'; // <-- DASHBOARD ADMIN DINÁMICO
+import UserProfilePage from './pages/UserProfilePage.jsx'; // <-- PÁGINA DE PERFIL DE USUARIO
+import ProfessionalProfileDetailPage from './pages/ProfessionalProfileDetailPage.jsx'; // <-- PERFIL PROFESIONAL DETALLADO
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
@@ -241,42 +244,21 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="appointment/:appointmentId/note" element={<SessionNotePage />} />
         </Route>
 
-                {/* --- Rutas Protegidas para el Administrador Global (localhost) --- */}
+        {/* --- Rutas Protegidas para el Administrador Global (localhost) --- */}
         <Route element={<ProtectedRoute userType="admin"><GlobalAdminLayout /></ProtectedRoute>}>
-          <Route path="global-admin" element={
-            <div>
-              <h1 className="text-3xl font-bold text-purple-800 mb-6">🌐 Panel de Administrador General</h1>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">🏥 Clínicas Registradas</h2>
-                  <p className="text-3xl font-bold text-purple-600">2</p>
-                  <p className="text-sm text-gray-600">Bienestar & MindCare</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">👥 Usuarios Totales</h2>
-                  <p className="text-3xl font-bold text-green-600">--</p>
-                  <p className="text-sm text-gray-600">Across all clinics</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">📊 Estadísticas</h2>
-                  <p className="text-3xl font-bold text-blue-600">--</p>
-                  <p className="text-sm text-gray-600">Global metrics</p>
-                </div>
-              </div>
-            </div>
-          } />
+          <Route path="global-admin" element={<AdminDashboardPage />} />
           <Route path="global-admin/clinics" element={<h1 className="text-2xl font-bold text-purple-800">🏥 Gestión de Clínicas</h1>} />
           <Route path="global-admin/users" element={<h1 className="text-2xl font-bold text-purple-800">👥 Usuarios Globales</h1>} />
           <Route path="global-admin/stats" element={<h1 className="text-2xl font-bold text-purple-800">📊 Estadísticas Globales</h1>} />
         </Route>
 
         {/* --- Rutas Protegidas para el Administrador de Clínica --- */}
-                <Route element={<ProtectedRoute userType="admin"><AdminLayout /></ProtectedRoute>}>
-                    <Route path="admin-dashboard" element={<h1 className="text-2xl font-bold text-primary">Bienvenido al Panel de Administración</h1>} />
-                    {/* Próximamente: <Route path="admin/users" element={<AdminUsersPage />} /> */}
-                </Route>
-        
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route element={<ProtectedRoute userType="admin"><AdminLayout /></ProtectedRoute>}>
+          <Route path="admin-dashboard" element={<AdminDashboardPage />} />
+          <Route path="admin/user/:userId" element={<UserProfilePage />} />
+          <Route path="admin/professional-profile/:userId" element={<ProfessionalProfileDetailPage />} />
+          {/* Próximamente más funcionalidades de admin de clínica */}
+        </Route>        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
