@@ -28,6 +28,7 @@ import UserProfilePage from './pages/UserProfilePage.jsx'; // <-- PÁGINA DE PER
 import ProfessionalProfileDetailPage from './pages/ProfessionalProfileDetailPage.jsx'; // <-- PERFIL PROFESIONAL DETALLADO
 import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx'; // <-- PÁGINA DE ÉXITO DE PAGO
 import PaymentCancelPage from './pages/PaymentCancelPage.jsx'; // <-- PÁGINA DE CANCELACIÓN DE PAGO
+import ClinicalHistoryPage from './pages/ClinicalHistoryPage.jsx'; // <-- PÁGINA DE HISTORIAL CLÍNICO
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
@@ -248,6 +249,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="psychologist-profile" element={<PsychologistProfilePage />} />
           <Route path="psychologist-documents" element={<DocumentsPage />} />
           <Route path="appointment/:appointmentId/note" element={<SessionNotePage />} />
+          <Route path="clinical-history/patient/:patientId" element={<ClinicalHistoryPage />} />
         </Route>
 
         {/* --- Rutas Protegidas para el Administrador Global (localhost) --- */}

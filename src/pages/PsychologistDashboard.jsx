@@ -32,6 +32,10 @@ function PsychologistDashboard() {
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [query, setQuery] = useState('');
+  
+  // Nuevo estado para el modal de confirmación
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [appointmentToComplete, setAppointmentToComplete] = useState(null);
 
   const fetchAppointments = async () => { /* ...tu función no cambia... */ 
     try {
@@ -69,16 +73,22 @@ function PsychologistDashboard() {
     }
   };
 
-  // Función para completar una cita
-  const handleCompleteAppointment = async (apptId) => {
-    if (!window.confirm("¿Estás seguro de que quieres marcar esta cita como completada?")) {
-      return;
-    }
+  // Función para abrir el modal de confirmación
+  const handleOpenCompleteModal = (appointment) => {
+    setAppointmentToComplete(appointment);
+    setIsCompleteModalOpen(true);
+  };
+
+  // Función para completar una cita (sin window.confirm)
+  const handleCompleteAppointment = async () => {
+    if (!appointmentToComplete) return;
     
     try {
-      await apiClient.post(`/appointments/appointments/${apptId}/complete/`);
+      await apiClient.post(`/appointments/appointments/${appointmentToComplete.id}/complete/`);
       toast.success("¡Cita marcada como completada! El paciente ahora puede calificarla.");
       fetchAppointments(); // Refresca la lista de citas
+      setIsCompleteModalOpen(false);
+      setAppointmentToComplete(null);
     } catch (error) {
       console.error('Error al completar la cita:', error);
       const errorMessage = error.response?.data?.detail || 
@@ -86,6 +96,12 @@ function PsychologistDashboard() {
                          "No se pudo completar la cita.";
       toast.error(errorMessage);
     }
+  };
+
+  // Función para cerrar el modal de confirmación
+  const handleCancelComplete = () => {
+    setIsCompleteModalOpen(false);
+    setAppointmentToComplete(null);
   };
   const getInitials = (fullName = '') => { /* ...tu función no cambia... */ 
     const parts = fullName.trim().split(/\s+/);
@@ -249,9 +265,16 @@ function PsychologistDashboard() {
                         <Link to={`/psychologist/chat/${appt.id}`} className={btnSecondary}>
                           Abrir chat
                         </Link>
+                        <Link 
+                          to={`/clinical-history/patient/${appt.patient}`} 
+                          className="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors text-sm"
+                          title="Ver historial clínico del paciente"
+                        >
+                          📋 Historial
+                        </Link>
                         {appt.status === 'confirmed' && (
                           <button 
-                            onClick={() => handleCompleteAppointment(appt.id)} 
+                            onClick={() => handleOpenCompleteModal(appt)} 
                             className="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm"
                           >
                             ✅ Completar Cita
@@ -293,10 +316,55 @@ function PsychologistDashboard() {
             />
           </div>
           <div className="flex justify-end gap-4 mt-6">
-            <button type_button className={btnGhost} onClick={handleCloseModal}>Cancelar</button>
+            <button type="button" className={btnGhost} onClick={handleCloseModal}>Cancelar</button>
             <button type="submit" className={btnPrimary}>Guardar</button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal de confirmación para completar cita */}
+      <Modal isOpen={isCompleteModalOpen} onClose={handleCancelComplete}>
+        <div className="text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Completar Cita</h2>
+          
+          {appointmentToComplete && (
+            <div className="mb-6">
+              <p className="text-gray-600 mb-2">
+                ¿Estás seguro de que quieres marcar como completada la cita con:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="font-semibold text-gray-900">{appointmentToComplete.patient_name}</p>
+                <p className="text-sm text-gray-600">
+                  {appointmentToComplete.appointment_date} - {appointmentToComplete.start_time}
+                </p>
+              </div>
+              <p className="text-sm text-gray-500 mt-3">
+                Una vez completada, el paciente podrá calificar la cita y ya no podrás revertir esta acción.
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-center gap-4">
+            <button 
+              onClick={handleCancelComplete}
+              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={handleCompleteAppointment}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+            >
+              ✅ Sí, Completar Cita
+            </button>
+          </div>
+        </div>
       </Modal>
     </>
   );
