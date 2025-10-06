@@ -29,6 +29,7 @@ import ProfessionalProfileDetailPage from './pages/ProfessionalProfileDetailPage
 import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx'; // <-- PÁGINA DE ÉXITO DE PAGO
 import PaymentCancelPage from './pages/PaymentCancelPage.jsx'; // <-- PÁGINA DE CANCELACIÓN DE PAGO
 import ClinicalHistoryPage from './pages/ClinicalHistoryPage.jsx'; // <-- PÁGINA DE HISTORIAL CLÍNICO
+import BackupsPage from './pages/BackupsPage.jsx'; // <-- PÁGINA DE COPIAS DE SEGURIDAD
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
@@ -191,7 +192,8 @@ function AdminLayout() {
             <nav className="flex justify-between items-center p-4 px-8 bg-gray-800 text-white shadow-md">
                 <Link to="/admin-dashboard" className="text-xl font-bold">Panel de Administrador</Link>
                 <div className="flex items-center gap-6">
-                    <Link to="/admin/users" className={navLink}>Usuarios</Link>
+                    <Link to="/admin-dashboard" className={navLink}>Dashboard</Link>
+                    <Link to="/admin-dashboard/backups" className={navLink}>Copias de Seguridad</Link>
                     {/* Enlaces futuros: Clínicas, Estadísticas, Configuración */}
                     <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
                 </div>
@@ -265,6 +267,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="admin-dashboard" element={<AdminDashboardPage />} />
           <Route path="admin/user/:userId" element={<UserProfilePage />} />
           <Route path="admin/professional-profile/:userId" element={<ProfessionalProfileDetailPage />} />
+          <Route path="admin-dashboard/backups" element={<BackupsPage />} />
           {/* Próximamente más funcionalidades de admin de clínica */}
         </Route>        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
