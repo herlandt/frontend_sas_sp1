@@ -43,21 +43,13 @@ export const getCurrentTenant = () => {
 // Función para obtener la URL base de la API
 export const getApiBaseURL = () => {
     const hostname = window.location.hostname;
-    
-    // Si es localhost simple = Admin Global (NO tiene /api/auth/, solo admin web)
-    if (hostname === 'localhost') {
-        // Para el admin global usaremos endpoints administrativos especiales
-        return `http://localhost:8000`;  // Sin /api porque no usa la API REST estándar
-    }
-    
-    // Si es subdominio.localhost = Clínica específica (SÍ tiene /api/auth/)
     if (hostname.includes('localhost')) {
         return `http://${hostname}:8000/api`;
     }
-    
-    // En producción (puedes personalizar según tus dominios de producción)
+    // Para producción
     return `https://${hostname}/api`;
 };
+
 
 // Función para verificar si estamos en modo admin global
 export const isGlobalAdmin = () => {

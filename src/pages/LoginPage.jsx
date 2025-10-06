@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api';
 import { isGlobalAdmin } from '../config/tenants';
-import { globalAdminLogin } from '../services/globalAdminAuth';
 // import './Auth.css'; // <-- ¡Ya no se necesita!
 
 function LoginPage() {
@@ -24,49 +23,41 @@ function LoginPage() {
         e.preventDefault();
         setError('');
         
-        const isGlobal = isGlobalAdmin();
-
         try {
-            if (isGlobal) {
-                // Autenticación especial para Admin Global
-                const { user } = await globalAdminLogin(formData.email, formData.password);
-                console.log("Admin Global autenticado:", user);
-                navigate('/global-admin');
+            // LÓGICA UNIFICADA: Siempre usamos apiClient para el login.
+            // La URL base correcta (localhost o subdominio) ya la configura tenants.js.
+            const loginResponse = await apiClient.post('/auth/login/', formData);
+            
+            // Guardamos el token que nos devuelve la API
+            localStorage.setItem('authToken', loginResponse.data.token);
+            
+            // Obtenemos el tipo de usuario para saber a dónde redirigir
+            const userType = loginResponse.data.user.user_type;
+            localStorage.setItem('userType', userType);
+            
+            // Guardamos info básica del usuario para usarla en otros lugares (ej. chat)
+            localStorage.setItem('currentUser', JSON.stringify({
+                id: loginResponse.data.user.id,
+                first_name: loginResponse.data.user.first_name
+            }));
+
+            // Redirigimos según el tipo de usuario
+            if (userType === 'admin' || userType === 'superuser') {
+                // isGlobalAdmin() nos dirá si es el dashboard global o de clínica
+                navigate(isGlobalAdmin() ? '/global-admin' : '/admin-dashboard');
+            } else if (userType === 'professional') {
+                navigate('/psychologist-dashboard');
             } else {
-                // Autenticación normal para clínicas (usando API REST)
-                const loginResponse = await apiClient.post('/auth/login/', formData);
-                localStorage.setItem('authToken', loginResponse.data.token);
-                
-                const profileResponse = await apiClient.get('/auth/profile/');
-                const userType = profileResponse.data.user_type;
-                
-                localStorage.setItem('userType', userType);
-
-                // --- ¡BLOQUE CORREGIDO! ---
-                // Guardamos solo 'first_name', que es lo que la API
-                // nos da y lo que el chat necesita.
-                localStorage.setItem('currentUser', JSON.stringify({
-                    id: profileResponse.data.id,
-                    first_name: profileResponse.data.first_name
-                }));
-                // --------------------------
-
-                if (userType === 'admin') {
-                    navigate('/admin-dashboard');
-                } else if (userType === 'professional') {
-                    navigate('/psychologist-dashboard');
-                } else {
-                    navigate('/dashboard');
-                }
+                navigate('/dashboard');
             }
         
         } catch (err) {
-            // Hacemos el catch más inteligente para ver el error real
             console.error("Error en el login:", err);
-            if (err.response && err.response.status === 400) {
-                 setError('Credenciales incorrectas. Inténtalo de nuevo.');
+            if (err.response && err.response.data) {
+                // Muestra el error específico del backend si está disponible
+                setError(err.response.data.non_field_errors?.[0] || 'Credenciales incorrectas.');
             } else {
-                 setError(err.message || 'Error de red o el servidor no responde.');
+                setError('Error de red o el servidor no responde.');
             }
         }
     };
@@ -85,7 +76,7 @@ function LoginPage() {
                         <h3 className="text-lg font-semibold text-purple-800">🌐 Administrador General</h3>
                         <p className="text-sm text-gray-600">Gestiona todas las clínicas del sistema</p>
                         <div className="mt-2 p-2 bg-purple-50 rounded text-xs text-purple-700">
-                            <strong>Credenciales:</strong> admin@psico.com / admin
+                            <strong>Credenciales:</strong> admin@psico.com / admin123
                         </div>
                     </div>
                 ) : (
@@ -97,7 +88,7 @@ function LoginPage() {
                              'Sistema de Clínicas'}
                         </p>
                         <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-700">
-                            <strong>Credenciales:</strong> admin@gmail.com / admin
+                            <strong>Credenciales:</strong> admin@psico.com / admin123
                         </div>
                     </div>
                 )}

@@ -26,10 +26,11 @@ import MyDocumentsPage from './pages/MyDocumentsPage.jsx'; // <-- PÁGINA PARA P
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx'; // <-- DASHBOARD ADMIN DINÁMICO
 import UserProfilePage from './pages/UserProfilePage.jsx'; // <-- PÁGINA DE PERFIL DE USUARIO
 import ProfessionalProfileDetailPage from './pages/ProfessionalProfileDetailPage.jsx'; // <-- PERFIL PROFESIONAL DETALLADO
+import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx'; // <-- PÁGINA DE ÉXITO DE PAGO
+import PaymentCancelPage from './pages/PaymentCancelPage.jsx'; // <-- PÁGINA DE CANCELACIÓN DE PAGO
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
-import { globalAdminLogout } from './services/globalAdminAuth.js'; // <-- LOGOUT ADMIN GLOBAL
 import './index.css'; 
 
 // --- Clases de Botones (sin cambios) ---
@@ -127,7 +128,10 @@ function PsychologistLayout() {
 function GlobalAdminLayout() {
     const navigate = useNavigate();
     const handleLogout = () => {
-        globalAdminLogout(); // Logout especial para admin global
+        // Logout unificado: limpia authToken como todos los otros layouts
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('currentUser');
         navigate('/login');
     };
     return (
@@ -223,6 +227,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/reset-password" element={<PasswordResetRequestPage />} />
         <Route path="/reset-password/:uid/:token" element={<PasswordResetConfirmPage />} />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
+        <Route path="/payment-cancel" element={<PaymentCancelPage />} />
         
         {/* --- Rutas Protegidas para el Paciente --- */}
         <Route element={<ProtectedRoute userType="patient"><DashboardLayout /></ProtectedRoute>}>

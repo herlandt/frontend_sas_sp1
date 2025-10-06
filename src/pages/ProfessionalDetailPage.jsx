@@ -8,6 +8,10 @@ import apiClient from '../api';
 import { Star, MapPin, Clock, BookOpen, Briefcase, ChevronLeft, Calendar, CheckCircle } from 'lucide-react';
 // Importamos el componente de reseñas
 import ReviewsList from '../components/ReviewsList';
+// Importamos el componente de pago
+import PaymentButton from '../components/PaymentButton';
+// Importamos el componente de información de pago
+import PaymentInfo from '../components/PaymentInfo';
 // --- Constantes de Estilo ---
 const btnBookable = "px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors text-sm text-center cursor-pointer";
 const btnBooked = "px-4 py-2 bg-muted text-muted-foreground rounded-lg cursor-not-allowed text-sm text-center";
@@ -58,6 +62,7 @@ function ProfessionalDetailPage() {
     const [reviewsData, setReviewsData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentUser, setCurrentUser] = useState(null);
     const { id } = useParams();
 
     // Estado para la nueva UI
@@ -99,19 +104,27 @@ function ProfessionalDetailPage() {
         const fetchDetails = async () => {
             setLoading(true);
             try {
-                // 1. Primero obtenemos el perfil profesional usando el ID de la URL
+                // 1. Obtener información del usuario actual
+                try {
+                    const userResponse = await apiClient.get('/users/profile/');
+                    setCurrentUser(userResponse.data);
+                } catch (userError) {
+                    console.error("Error al cargar perfil del usuario:", userError);
+                }
+
+                // 2. Primero obtenemos el perfil profesional usando el ID de la URL
                 const profResponse = await apiClient.get(`/professionals/${id}/`);
                 setProfessional(profResponse.data);
                 
-                // 2. Extraemos el user_id del perfil para la segunda llamada
+                // 3. Extraemos el user_id del perfil para la segunda llamada
                 const userId = profResponse.data.user_id;
                 
                 if (userId) {
-                    // 3. Usamos la función separada para obtener el horario
+                    // 4. Usamos la función separada para obtener el horario
                     await fetchSchedule(userId);
                 }
 
-                // 4. Carga las reseñas usando el ID del PERFIL
+                // 5. Carga las reseñas usando el ID del PERFIL
                 try {
                     const reviewsResponse = await apiClient.get(`/professionals/${id}/reviews/`);
                     setReviewsData(reviewsResponse.data);
@@ -289,6 +302,9 @@ function ProfessionalDetailPage() {
 
                 {/* Columna Derecha: Agenda (como image_5492e6.png) */}
                 <div className="w-full lg:w-96 flex-shrink-0">
+                    {/* Información de Pago */}
+                    <PaymentInfo />
+                    
                     <div className="bg-card p-6 rounded-xl shadow-lg border border-border sticky top-24">
                         <h2 className="text-xl font-semibold text-primary mb-4 flex items-center gap-2">
                             <Calendar className="h-5 w-5" />
@@ -368,9 +384,27 @@ function ProfessionalDetailPage() {
                                     <span className="text-muted-foreground">Total:</span>
                                     <span className="text-xl font-bold text-primary">Bs. {professional.consultation_fee}</span>
                                 </div>
-                                <button onClick={handleBookAppointment} className={btnPrimary}>
-                                    Reservar Cita
-                                </button>
+                                <PaymentButton
+                                    appointmentData={{
+                                        psychologist: professional.user_id,
+                                        appointment_date: selectedDate.date,
+                                        start_time: selectedTime,
+                                        price: professional.consultation_fee
+                                    }}
+                                    user={currentUser}
+                                    onSuccess={() => {
+                                        toast.success('¡Pago exitoso! Tu cita ha sido confirmada.');
+                                        // Refresca el horario después del pago exitoso
+                                        fetchSchedule(professional.user_id);
+                                        setSelectedTime(null);
+                                    }}
+                                    onError={(error) => {
+                                        toast.error(`Error en el pago: ${error}`);
+                                    }}
+                                    className="w-full"
+                                >
+                                    Pagar y Confirmar Cita
+                                </PaymentButton>
                             </div>
                         )}
                     </div>

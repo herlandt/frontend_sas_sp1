@@ -36,11 +36,12 @@ function GlobalAdminDashboard() {
     useEffect(() => {
         const fetchClinics = async () => {
             try {
-                // Intentar obtener datos del backend
-                const response = await apiClient.get('/api/tenants/clinics/');
-                setClinics(response.data);
+                // CORRECCIÓN: La ruta no debe empezar con /api/ porque ya está en la URL base.
+                const response = await apiClient.get('/tenants/clinics/');
+                // CORRECCIÓN: Extraemos la lista de la propiedad "results" de la respuesta paginada
+                setClinics(response.data.results);
             } catch (err) {
-                console.warn("Endpoint /api/tenants/clinics/ no disponible, usando datos simulados:", err);
+                console.warn("Endpoint /tenants/clinics/ no disponible, usando datos simulados:", err);
                 // Usar datos simulados mientras se implementa el endpoint
                 setTimeout(() => {
                     setClinics(mockClinics);
