@@ -30,6 +30,7 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx'; // <-- PÁGINA 
 import PaymentCancelPage from './pages/PaymentCancelPage.jsx'; // <-- PÁGINA DE CANCELACIÓN DE PAGO
 import ClinicalHistoryPage from './pages/ClinicalHistoryPage.jsx'; // <-- PÁGINA DE HISTORIAL CLÍNICO
 import BackupsPage from './pages/BackupsPage.jsx'; // <-- PÁGINA DE COPIAS DE SEGURIDAD
+import AuditLogPage from './pages/AuditLogPage.jsx'; // <-- PÁGINA DE BITÁCORA
 // Importaciones de Componentes
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import TenantInfo from './components/TenantInfo.jsx'; // <-- COMPONENTE MULTI-TENANT
@@ -194,6 +195,7 @@ function AdminLayout() {
                 <div className="flex items-center gap-6">
                     <Link to="/admin-dashboard" className={navLink}>Dashboard</Link>
                     <Link to="/admin-dashboard/backups" className={navLink}>Copias de Seguridad</Link>
+                    <Link to="/admin-dashboard/audit-log" className={navLink}>Bitácora</Link>
                     {/* Enlaces futuros: Clínicas, Estadísticas, Configuración */}
                     <button onClick={handleLogout} className={btnDestructive}>Cerrar Sesión</button>
                 </div>
@@ -268,6 +270,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="admin/user/:userId" element={<UserProfilePage />} />
           <Route path="admin/professional-profile/:userId" element={<ProfessionalProfileDetailPage />} />
           <Route path="admin-dashboard/backups" element={<BackupsPage />} />
+          <Route path="admin-dashboard/audit-log" element={<AuditLogPage />} />
           {/* Próximamente más funcionalidades de admin de clínica */}
         </Route>        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
